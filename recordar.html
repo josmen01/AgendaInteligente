@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuevo recordatorio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#0A4DFF;
+font-family:'Poppins',sans-serif;
+color:white;
+}
+
+.pantalla{
+min-height:100vh;
+padding:28px 24px 34px;
+display:flex;
+flex-direction:column;
+}
+
+.arriba{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:45px;
+}
+
+.icono{
+font-size:34px;
+text-decoration:none;
+color:white;
+}
+
+h1{
+font-size:44px;
+line-height:1.1;
+margin-bottom:14px;
+}
+
+.sub{
+font-size:20px;
+opacity:.95;
+margin-bottom:40px;
+}
+
+label{
+font-size:18px;
+margin-bottom:10px;
+display:block;
+}
+
+textarea{
+width:100%;
+height:140px;
+border:none;
+border-radius:22px;
+padding:20px;
+font-size:20px;
+font-family:Poppins,sans-serif;
+resize:none;
+outline:none;
+margin-bottom:30px;
+}
+
+.fecha{
+width:100%;
+height:65px;
+border:none;
+border-radius:18px;
+padding:0 18px;
+font-size:18px;
+font-family:Poppins,sans-serif;
+margin-bottom:auto;
+}
+
+.boton{
+margin-top:40px;
+width:100%;
+height:95px;
+border:none;
+border-radius:28px;
+background:white;
+color:#0A4DFF;
+font-size:32px;
+font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="pantalla">
+
+<div class="arriba">
+<a href="index.html" class="icono">←</a>
+<div class="icono">☰</div>
+</div>
+
+<div>
+
+<h1>¿Qué quieres recordar?</h1>
+
+<div class="sub">Escríbelo en una frase.</div>
+
+<label>Recordatorio</label>
+
+<textarea placeholder="Ejemplo: Pagar la luz"></textarea>
+
+<label>¿Cuándo quieres que te lo recordemos?</label>
+
+<input class="fecha" type="date">
+
+</div>
+
+<button class="boton">Guardar</button>
+
+</div>
+
+</body>
+</html>
