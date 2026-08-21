@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis recordatorios</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#0A4DFF;
+font-family:'Poppins',sans-serif;
+color:white;
+}
+
+.pantalla{
+min-height:100vh;
+padding:28px 24px 34px;
+display:flex;
+flex-direction:column;
+}
+
+.arriba{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:40px;
+}
+
+.icono{
+font-size:34px;
+text-decoration:none;
+color:white;
+}
+
+h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.sub{
+font-size:18px;
+opacity:.95;
+margin-bottom:35px;
+}
+
+.barra{
+width:100%;
+border-radius:24px;
+padding:24px;
+margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.titulo{
+font-size:28px;
+font-weight:700;
+}
+
+.numero{
+font-size:34px;
+font-weight:700;
+}
+
+.rojo{background:#E53935;}
+.naranja{background:#F59E0B;}
+.verde{background:#16A34A;}
+
+.boton{
+margin-top:auto;
+width:100%;
+height:95px;
+border:none;
+border-radius:28px;
+background:white;
+color:#0A4DFF;
+font-size:32px;
+font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="pantalla">
+
+<div class="arriba">
+<a href="recordar.html" class="icono">←</a>
+<div class="icono">☰</div>
+</div>
+
+<div>
+
+<h1>Mis recordatorios</h1>
+<div class="sub">Todo organizado por prioridad.</div>
+
+<div class="barra rojo">
+<span class="titulo">Hoy</span>
+<span class="numero">0</span>
+</div>
+
+<div class="barra naranja">
+<span class="titulo">Mañana</span>
+<span class="numero">0</span>
+</div>
+
+<div class="barra verde">
+<span class="titulo">Próximos</span>
+<span class="numero">0</span>
+</div>
+
+</div>
+
+<button class="boton" onclick="location.href='recordar.html'">
++ Recordar
+</button>
+
+</div>
+
+</body>
+</html>
