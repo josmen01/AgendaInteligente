@@ -113,17 +113,61 @@ font-weight:700;
 
 <label>Recordatorio</label>
 
-<textarea placeholder="Ejemplo: Pagar la luz"></textarea>
+<textarea id="titulo" placeholder="Ejemplo: Pagar recibo de luz"></textarea>
 
 <label>¿Cuándo quieres que te lo recordemos?</label>
 
-<input class="fecha" type="date">
+<input type="date" id="fecha">
 
 </div>
 
-<button class="boton" onclick="location.href='app.html'">Guardar</button>
+
+<button class="botón" onclick="guardarRecordatorio()">
+  Guardar
+</button>
 
 </div>
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
+  const SUPABASE_URL = "https://wekwkbrtxvwfbselprgn.supabase.co";
+
+  const SUPABASE_KEY = sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap
+
+  const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  window.guardarRecordatorio = async function () {
+
+    const titulo = document.getElementById("titulo").value;
+    const fecha = document.getElementById("fecha").value;
+
+    if (!titulo || !fecha) {
+      alert("Escribe un recordatorio y selecciona una fecha.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("recordatorios")
+      .insert([
+        {
+          titulo: titulo,
+          fecha: fecha
+        }
+      ]);
+
+    if (error) {
+      console.error(error);
+      alert("No se pudo guardar el recordatorio.");
+      return;
+    }
+
+    alert("¡Recordatorio guardado!");
+
+    window.location.href = "app.html";
+  };
+</script>
 </body>
 </html>
