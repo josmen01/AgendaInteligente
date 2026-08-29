@@ -72,7 +72,6 @@
     line-height: 1.3;
   }
 
-  /* Campo de fecha: caja blanca grande que, al tocarla, abre el calendario real del teléfono */
   input[type="date"] {
     width: 100%;
     height: 64px;
@@ -90,7 +89,6 @@
     outline: 3px solid #FFFFFF;
   }
 
-  /* Botón Guardar: grande, sólido, blanco con texto azul, igual de fuerte que el botón "+ Recordar" del inicio */
   .boton-guardar {
     width: 100%;
     height: 72px;
@@ -108,7 +106,6 @@
     background-color: #E6ECFF;
   }
 
-  /* Mensaje de confirmación al guardar */
   .mensaje-confirmacion {
     display: none;
     position: fixed;
@@ -138,9 +135,6 @@
 
   <p class="pregunta-fecha">¿Cuándo quieres que te lo recordemos?</p>
   <input type="date" id="fecha">
-  <!-- Al tocar esta caja, el teléfono abre su calendario real -->
-  <!-- para que el usuario elija el día exacto: hoy, mañana, -->
-  <!-- otro mes o incluso otro año. -->
 
   <button class="boton-guardar" id="btnGuardar">Guardar</button>
 
@@ -148,17 +142,33 @@
     ¡Recordatorio guardado!
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // NOTA: Este botón todavía NO está conectado a Supabase.
-    // Eso lo haremos en el siguiente paso, cuando conectemos la base de datos.
-    // Por ahora, al pulsar "Guardar" se muestra la confirmación y regresa a app.html.
+    var SUPABASE_URL = 'https://wekwkbrtxvwfbselprgn.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
+    var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    document.getElementById('btnGuardar').addEventListener('click', function () {
+    document.getElementById('btnGuardar').addEventListener('click', async function () {
       var texto = document.getElementById('recordatorio').value.trim();
       var fecha = document.getElementById('fecha').value;
 
       if (texto === '' || fecha === '') {
         alert('Por favor escribe tu recordatorio y elige cuándo quieres que te lo recordemos.');
+        return;
+      }
+
+      var btn = document.getElementById('btnGuardar');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      var resultado = await supabaseClient
+        .from('Recordatorios')
+        .insert([{ 'título': texto, 'fecha': fecha }]);
+
+      if (resultado.error) {
+        alert('Hubo un problema al guardar. Inténtalo de nuevo.');
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
         return;
       }
 
