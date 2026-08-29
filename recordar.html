@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -163,10 +164,10 @@
 
       var resultado = await supabaseClient
         .from('Recordatorios')
-        .insert([{ 'título': texto, 'fecha': fecha }]);
+        .insert([{ 'titulo': texto, 'fecha': fecha }]);
 
       if (resultado.error) {
-        alert('Hubo un problema al guardar. Inténtalo de nuevo.');
+        alert('Error al guardar: ' + resultado.error.message);
         btn.disabled = false;
         btn.textContent = 'Guardar';
         return;
