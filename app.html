@@ -50,6 +50,7 @@ margin-bottom:20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+cursor:pointer;
 }
 .titulo{
 font-size:28px;
@@ -84,15 +85,15 @@ font-weight:700;
 <div>
 <h1>Mis recordatorios</h1>
 <div class="sub">Todo organizado por prioridad.</div>
-<div class="barra rojo">
+<div class="barra rojo" onclick="location.href='lista.html?tipo=hoy'">
 <span class="titulo">Hoy</span>
 <span class="numero" id="numHoy">0</span>
 </div>
-<div class="barra naranja">
+<div class="barra naranja" onclick="location.href='lista.html?tipo=manana'">
 <span class="titulo">Mañana</span>
 <span class="numero" id="numManana">0</span>
 </div>
-<div class="barra verde">
+<div class="barra verde" onclick="location.href='lista.html?tipo=proximos'">
 <span class="titulo">Próximos</span>
 <span class="numero" id="numProximos">0</span>
 </div>
