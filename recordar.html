@@ -1,173 +1,176 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nuevo recordatorio</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
+<title>Agenda Inteligente - Nuevo recordatorio</title>
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-body{
-background:#0A4DFF;
-font-family:'Poppins',sans-serif;
-color:white;
-}
+  body {
+    background-color: #1854F5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #FFFFFF;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 24px 40px 24px;
+  }
 
-.pantalla{
-min-height:100vh;
-padding:28px 24px 34px;
-display:flex;
-flex-direction:column;
-}
+  .back-arrow {
+    font-size: 28px;
+    color: #FFFFFF;
+    text-decoration: none;
+    margin-bottom: 20px;
+    display: inline-block;
+    width: 40px;
+  }
 
-.arriba{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:45px;
-}
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
 
-.icono{
-font-size:34px;
-text-decoration:none;
-color:white;
-}
+  .subtitulo {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 30px;
+  }
 
-h1{
-font-size:44px;
-line-height:1.1;
-margin-bottom:14px;
-}
+  label {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
 
-.sub{
-font-size:20px;
-opacity:.95;
-margin-bottom:40px;
-}
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 20px;
+    border: none;
+    padding: 20px;
+    font-size: 22px;
+    font-family: inherit;
+    color: #333333;
+    resize: none;
+    margin-bottom: 30px;
+  }
 
-label{
-font-size:18px;
-margin-bottom:10px;
-display:block;
-}
+  textarea:focus {
+    outline: 3px solid #FFFFFF;
+  }
 
-textarea{
-width:100%;
-height:140px;
-border:none;
-border-radius:22px;
-padding:20px;
-font-size:20px;
-font-family:Poppins,sans-serif;
-resize:none;
-outline:none;
-margin-bottom:30px;
-}
+  .pregunta-fecha {
+    font-size: 22px;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
 
-.fecha{
-width:100%;
-height:65px;
-border:none;
-border-radius:18px;
-padding:0 18px;
-font-size:18px;
-font-family:Poppins,sans-serif;
-margin-bottom:auto;
-}
+  /* Campo de fecha: caja blanca grande que, al tocarla, abre el calendario real del teléfono */
+  input[type="date"] {
+    width: 100%;
+    height: 64px;
+    border-radius: 18px;
+    border: none;
+    padding: 0 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333333;
+    background-color: #FFFFFF;
+    margin-bottom: 30px;
+  }
 
-.boton{
-margin-top:40px;
-width:100%;
-height:95px;
-border:none;
-border-radius:28px;
-background:white;
-color:#0A4DFF;
-font-size:32px;
-font-weight:700;
-}
+  input[type="date"]:focus {
+    outline: 3px solid #FFFFFF;
+  }
+
+  /* Botón Guardar: grande, sólido, blanco con texto azul, igual de fuerte que el botón "+ Recordar" del inicio */
+  .boton-guardar {
+    width: 100%;
+    height: 72px;
+    background-color: #FFFFFF;
+    color: #1854F5;
+    border: none;
+    border-radius: 40px;
+    font-size: 24px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: auto;
+  }
+
+  .boton-guardar:active {
+    background-color: #E6ECFF;
+  }
+
+  /* Mensaje de confirmación al guardar */
+  .mensaje-confirmacion {
+    display: none;
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    background-color: #FFFFFF;
+    color: #1854F5;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 18px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
 </style>
 </head>
-
 <body>
 
-<div class="pantalla">
+  <a href="index.html" class="back-arrow">&#8592;</a>
 
-<div class="arriba">
-<a href="index.html" class="icono">←</a>
-<div class="icono">☰</div>
-</div>
+  <h1>¿Qué quieres<br>recordar?</h1>
+  <p class="subtitulo">Escríbelo en una frase.</p>
 
-<div>
+  <label for="recordatorio">Recordatorio</label>
+  <textarea id="recordatorio" placeholder="Ejemplo: Pagar recibo de luz"></textarea>
 
-<h1>¿Qué quieres recordar?</h1>
+  <p class="pregunta-fecha">¿Cuándo quieres que te lo recordemos?</p>
+  <input type="date" id="fecha">
+  <!-- Al tocar esta caja, el teléfono abre su calendario real -->
+  <!-- para que el usuario elija el día exacto: hoy, mañana, -->
+  <!-- otro mes o incluso otro año. -->
 
-<div class="sub">Escríbelo en una frase.</div>
+  <button class="boton-guardar" id="btnGuardar">Guardar</button>
 
-<label>Recordatorio</label>
+  <div class="mensaje-confirmacion" id="mensajeConfirmacion">
+    ¡Recordatorio guardado!
+  </div>
 
-<textarea id="titulo" placeholder="Ejemplo: Pagar recibo de luz"></textarea>
+  <script>
+    // NOTA: Este botón todavía NO está conectado a Supabase.
+    // Eso lo haremos en el siguiente paso, cuando conectemos la base de datos.
+    // Por ahora, al pulsar "Guardar" se muestra la confirmación y regresa a app.html.
 
-<label>¿Cuándo quieres que te lo recordemos?</label>
+    document.getElementById('btnGuardar').addEventListener('click', function () {
+      var texto = document.getElementById('recordatorio').value.trim();
+      var fecha = document.getElementById('fecha').value;
 
-<input type="date" id="fecha">
+      if (texto === '' || fecha === '') {
+        alert('Por favor escribe tu recordatorio y elige cuándo quieres que te lo recordemos.');
+        return;
+      }
 
-</div>
+      var mensaje = document.getElementById('mensajeConfirmacion');
+      mensaje.style.display = 'block';
 
+      setTimeout(function () {
+        window.location.href = 'app.html';
+      }, 1200);
+    });
+  </script>
 
-<button class="botón" onclick="guardarRecordatorio()">
-  Guardar
-</button>
-
-</div>
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-  const SUPABASE_URL = "https://wekwkbrtxvwfbselprgn.supabase.co";
-
-  const SUPABASE_KEY = sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap
-
-  const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-  window.guardarRecordatorio = async function () {
-
-    const titulo = document.getElementById("titulo").value;
-    const fecha = document.getElementById("fecha").value;
-
-    if (!titulo || !fecha) {
-      alert("Escribe un recordatorio y selecciona una fecha.");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("recordatorios")
-      .insert([
-        {
-          titulo: titulo,
-          fecha: fecha
-        }
-      ]);
-
-    if (error) {
-      console.error(error);
-      alert("No se pudo guardar el recordatorio.");
-      return;
-    }
-
-    alert("¡Recordatorio guardado!");
-
-    window.location.href = "app.html";
-  };
-</script>
 </body>
 </html>
