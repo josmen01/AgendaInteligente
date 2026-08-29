@@ -131,7 +131,7 @@ h1{
     var contenedor = document.getElementById('contenedorLista');
 
     if (resultado.error || !resultado.data) {
-      contenedor.innerHTML = '<div class="vacio">No se pudo cargar la lista.</div>';
+      contenedor.innerHTML = '<div class="vacio">No se pudieron cargar los recordatorios: ' + (resultado.error ? resultado.error.message : 'error desconocido') + '</div>';
       return;
     }
 
