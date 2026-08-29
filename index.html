@@ -4,21 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agenda Inteligente</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
 }
-
 body{
   background:#0A4DFF;
   font-family:'Poppins',sans-serif;
 }
-
 .pantalla{
   min-height:100vh;
   display:flex;
@@ -27,30 +23,25 @@ body{
   align-items:center;
   padding:70px 24px 34px;
 }
-
 .espacio-superior{
   height:150px;
 }
-
 .contenido{
   width:100%;
   text-align:center;
   color:white;
 }
-
 h1{
   font-size:64px;
   font-weight:700;
   line-height:1.02;
   margin-bottom:55px;
 }
-
 .texto{
   font-size:24px;
   line-height:1.6;
   font-weight:400;
 }
-
 .boton{
   width:100%;
   max-width:430px;
@@ -67,38 +58,42 @@ h1{
   font-weight:700;
   box-shadow:0 10px 30px rgba(0,0,0,.18);
 }
-
 .mas{
   font-size:62px;
   font-weight:300;
 }
+/* Enlace simple para ver la agenda, debajo del botón principal */
+.ver-recordatorios{
+  margin-top:22px;
+  color:white;
+  font-size:18px;
+  font-weight:600;
+  text-decoration:underline;
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:'Poppins',sans-serif;
+}
 </style>
 </head>
-
 <body>
-
 <div class="pantalla">
-
   <div class="espacio-superior"></div>
-
   <div class="contenido">
-
     <h1>¿Qué no<br>quieres<br>olvidar?</h1>
-
     <div class="texto">
       <div>Escríbelo ahora.</div>
       <div>Nosotros te lo recordaremos</div>
       <div>Cuando tú elijas.</div>
     </div>
-
   </div>
-
-  <button class="boton" onclick="location.href='recordar.html'">
-    <span class="mas">+</span>
-    <span>Recordar</span>
-  </button>
-
+  <div>
+    <button class="boton" onclick="location.href='recordar.html'">
+      <span class="mas">+</span>
+      <span>Recordar</span>
+    </button>
+    <button class="ver-recordatorios" onclick="location.href='app.html'">Ver mis recordatorios</button>
+  </div>
 </div>
-
 </body>
 </html>
