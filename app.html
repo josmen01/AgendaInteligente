@@ -4,53 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mis recordatorios</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
 }
-
 body{
 background:#0A4DFF;
 font-family:'Poppins',sans-serif;
 color:white;
 }
-
 .pantalla{
 min-height:100vh;
 padding:28px 24px 34px;
 display:flex;
 flex-direction:column;
 }
-
 .arriba{
 display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:40px;
 }
-
 .icono{
 font-size:34px;
 text-decoration:none;
 color:white;
 }
-
 h1{
 font-size:42px;
 margin-bottom:10px;
 }
-
 .sub{
 font-size:18px;
 opacity:.95;
 margin-bottom:35px;
 }
-
 .barra{
 width:100%;
 border-radius:24px;
@@ -60,21 +51,17 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 }
-
 .titulo{
 font-size:28px;
 font-weight:700;
 }
-
 .numero{
 font-size:34px;
 font-weight:700;
 }
-
 .rojo{background:#E53935;}
 .naranja{background:#F59E0B;}
 .verde{background:#16A34A;}
-
 .boton{
 margin-top:auto;
 width:100%;
@@ -88,43 +75,86 @@ font-weight:700;
 }
 </style>
 </head>
-
 <body>
-
 <div class="pantalla">
-
 <div class="arriba">
 <a href="recordar.html" class="icono">←</a>
 <div class="icono">☰</div>
 </div>
-
 <div>
-
 <h1>Mis recordatorios</h1>
 <div class="sub">Todo organizado por prioridad.</div>
-
 <div class="barra rojo">
 <span class="titulo">Hoy</span>
-<span class="numero">0</span>
+<span class="numero" id="numHoy">0</span>
 </div>
-
 <div class="barra naranja">
 <span class="titulo">Mañana</span>
-<span class="numero">0</span>
+<span class="numero" id="numManana">0</span>
 </div>
-
 <div class="barra verde">
 <span class="titulo">Próximos</span>
-<span class="numero">0</span>
+<span class="numero" id="numProximos">0</span>
 </div>
-
 </div>
-
 <button class="boton" onclick="location.href='recordar.html'">
 + Recordar
 </button>
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  var SUPABASE_URL = 'https://wekwkbrtxvwfbselprgn.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
+  var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function fechaAString(fecha) {
+    var y = fecha.getFullYear();
+    var m = String(fecha.getMonth() + 1).padStart(2, '0');
+    var d = String(fecha.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  async function cargarRecordatorios() {
+    var resultado = await supabaseClient
+      .from('Recordatorios')
+      .select('*');
+
+    if (resultado.error || !resultado.data) {
+      return;
+    }
+
+    var hoy = new Date();
+    var manana = new Date();
+    manana.setDate(hoy.getDate() + 1);
+
+    var hoyStr = fechaAString(hoy);
+    var mananaStr = fechaAString(manana);
+
+    var contHoy = 0;
+    var contManana = 0;
+    var contProximos = 0;
+
+    resultado.data.forEach(function (item) {
+      var fechaItem = item['fecha'];
+      if (!fechaItem) return;
+
+      if (fechaItem === hoyStr) {
+        contHoy++;
+      } else if (fechaItem === mananaStr) {
+        contManana++;
+      } else if (fechaItem > mananaStr) {
+        contProximos++;
+      }
+    });
+
+    document.getElementById('numHoy').textContent = contHoy;
+    document.getElementById('numManana').textContent = contManana;
+    document.getElementById('numProximos').textContent = contProximos;
+  }
+
+  cargarRecordatorios();
+</script>
 
 </body>
 </html>
