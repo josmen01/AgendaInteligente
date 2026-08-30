@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agenda Inteligente - Lista</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A4DFF">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="AgendaInteligenteJM">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{
@@ -151,21 +156,4 @@ h1{
       return false;
     });
 
-    if (filtrados.length === 0) {
-      contenedor.innerHTML = '<div class="vacio">No tienes recordatorios aquí todavía.</div>';
-      return;
-    }
-
-    contenedor.innerHTML = filtrados.map(function (item) {
-      return '<div class="tarjeta">' +
-        '<div class="tarjeta-texto">' + item['titulo'] + '</div>' +
-        '<div class="tarjeta-fecha">' + fechaBonita(item['fecha']) + '</div>' +
-        '</div>';
-    }).join('');
-  }
-
-  cargarLista();
-</script>
-
-</body>
-</html>
+    if (filtrados.length ===
