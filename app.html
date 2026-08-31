@@ -95,7 +95,7 @@ margin-bottom:20px;
 <div class="pantalla">
 <div class="arriba">
 <a href="recordar.html" class="icono">←</a>
-<div class="icono">☰</div>
+<div class="icono" id="btnCerrarSesion" style="font-size:16px; cursor:pointer;">Salir</div>
 </div>
 <div>
 <h1>Mis recordatorios</h1>
@@ -132,7 +132,18 @@ margin-bottom:20px;
     return y + '-' + m + '-' + d;
   }
 
+  document.getElementById('btnCerrarSesion').addEventListener('click', async function () {
+    await supabaseClient.auth.signOut();
+    window.location.href = 'login.html';
+  });
+
   async function cargarRecordatorios() {
+    var sesion = await supabaseClient.auth.getSession();
+    if (!sesion.data || !sesion.data.session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
     var resultado = await supabaseClient
       .from('Recordatorios')
       .select('*');
