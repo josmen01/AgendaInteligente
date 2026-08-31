@@ -128,6 +128,12 @@ h1{
   document.getElementById('subtitulo').textContent = 'Todo organizado por prioridad.';
 
   async function cargarLista() {
+    var sesion = await supabaseClient.auth.getSession();
+    if (!sesion.data || !sesion.data.session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
     var resultado = await supabaseClient
       .from('Recordatorios')
       .select('*')
@@ -156,4 +162,21 @@ h1{
       return false;
     });
 
-    if (filtrados.length ===
+    if (filtrados.length === 0) {
+      contenedor.innerHTML = '<div class="vacio">No tienes recordatorios aquí todavía.</div>';
+      return;
+    }
+
+    contenedor.innerHTML = filtrados.map(function (item) {
+      return '<div class="tarjeta">' +
+        '<div class="tarjeta-texto">' + item['titulo'] + '</div>' +
+        '<div class="tarjeta-fecha">' + fechaBonita(item['fecha']) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  cargarLista();
+</script>
+
+</body>
+</html>
