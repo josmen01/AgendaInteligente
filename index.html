@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -68,6 +67,7 @@ h1{
   font-size:62px;
   font-weight:300;
 }
+/* Enlace simple para ver la agenda, debajo del botón principal */
 .ver-recordatorios{
   margin-top:22px;
   color:white;
@@ -100,5 +100,21 @@ h1{
     <button class="ver-recordatorios" onclick="location.href='app.html'">Ver mis recordatorios</button>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  var SUPABASE_URL = 'https://wekwkbrtxvwfbselprgn.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
+  var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Si ya inició sesión antes, lo llevamos directo a su agenda
+  async function revisarSesion() {
+    var resultado = await supabaseClient.auth.getSession();
+    if (resultado.data && resultado.data.session) {
+      window.location.href = 'app.html';
+    }
+  }
+  revisarSesion();
+</script>
 </body>
 </html>
