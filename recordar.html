@@ -153,6 +153,14 @@
     var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
     var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    async function revisarSesion() {
+      var resultado = await supabaseClient.auth.getSession();
+      if (!resultado.data || !resultado.data.session) {
+        window.location.href = 'login.html';
+      }
+    }
+    revisarSesion();
+
     document.getElementById('btnGuardar').addEventListener('click', async function () {
       var texto = document.getElementById('recordatorio').value.trim();
       var fecha = document.getElementById('fecha').value;
@@ -166,9 +174,16 @@
       btn.disabled = true;
       btn.textContent = 'Guardando...';
 
+      var sesion = await supabaseClient.auth.getSession();
+      if (!sesion.data || !sesion.data.session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      var usuarioId = sesion.data.session.user.id;
+
       var resultado = await supabaseClient
         .from('Recordatorios')
-        .insert([{ 'titulo': texto, 'fecha': fecha }]);
+        .insert([{ 'titulo': texto, 'fecha': fecha, 'usuario_id': usuarioId }]);
 
       if (resultado.error) {
         alert('Error al guardar: ' + resultado.error.message);
