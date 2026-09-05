@@ -1,6 +1,6 @@
 {
-  "name": "AgendaInteligenteJM",
-  "short_name": "AgendaInteligenteJM",
+  "name": "RecuerdaJM",
+  "short_name": "RecuerdaJM",
   "description": "Escribe lo que no quieres olvidar. Nosotros te lo recordamos.",
   "start_url": "index.html",
   "display": "standalone",
