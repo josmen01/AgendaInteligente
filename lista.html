@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecuerdaJM - Lista</title>
+<title>Agenda Inteligente - Lista</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A4DFF">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -116,6 +116,43 @@ h1{
     return dia + ' de ' + mes + ' de ' + partes[0];
   }
 
+  function siguienteFecha(fechaStr, repetir) {
+    var partes = fechaStr.split('-').map(Number);
+    var f = new Date(partes[0], partes[1] - 1, partes[2]);
+    var hoy = new Date();
+    hoy.setHours(0,0,0,0);
+
+    while (f < hoy) {
+      if (repetir === 'semanal') f.setDate(f.getDate() + 7);
+      else if (repetir === 'mensual') f.setMonth(f.getMonth() + 1);
+      else if (repetir === 'anual') f.setFullYear(f.getFullYear() + 1);
+      else break;
+    }
+    return fechaAString(f);
+  }
+
+  async function ajustarRepeticiones(recordatorios) {
+    var hoyStr = fechaAString(new Date());
+    var actualizaciones = [];
+
+    recordatorios.forEach(function (item) {
+      if (item.repetir && item.repetir !== 'no' && item.fecha < hoyStr) {
+        var nueva = siguienteFecha(item.fecha, item.repetir);
+        if (nueva !== item.fecha) {
+          item.fecha = nueva;
+          actualizaciones.push(
+            supabaseClient.from('Recordatorios').update({ fecha: nueva }).eq('id', item.id)
+          );
+        }
+      }
+    });
+
+    if (actualizaciones.length > 0) {
+      await Promise.all(actualizaciones);
+    }
+    return recordatorios;
+  }
+
   var parametros = new URLSearchParams(window.location.search);
   var tipo = parametros.get('tipo') || 'hoy';
 
@@ -146,6 +183,8 @@ h1{
       return;
     }
 
+    var datos = await ajustarRepeticiones(resultado.data);
+
     var hoy = new Date();
     var manana = new Date();
     manana.setDate(hoy.getDate() + 1);
@@ -153,7 +192,7 @@ h1{
     var hoyStr = fechaAString(hoy);
     var mananaStr = fechaAString(manana);
 
-    var filtrados = resultado.data.filter(function (item) {
+    var filtrados = datos.filter(function (item) {
       var f = item['fecha'];
       if (!f) return false;
       if (tipo === 'hoy') return f === hoyStr;
