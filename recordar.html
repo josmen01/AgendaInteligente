@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecuerdaJM - Nuevo recordatorio</title>
+<title>Agenda Inteligente - Nuevo recordatorio</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A4DFF">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -94,6 +94,30 @@
     outline: 3px solid #FFFFFF;
   }
 
+  .pregunta-repetir {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  select#repetir {
+    width: 100%;
+    height: 60px;
+    border-radius: 18px;
+    border: none;
+    padding: 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    background-color: #FFFFFF;
+    margin-bottom: 30px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231854F5' d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
+  }
+
   .boton-guardar {
     width: 100%;
     height: 72px;
@@ -111,6 +135,10 @@
     background-color: #E6ECFF;
   }
 
+  .boton-guardar:disabled {
+    opacity: 0.6;
+  }
+
   .mensaje-confirmacion {
     display: none;
     position: fixed;
@@ -126,6 +154,32 @@
     text-align: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
+
+  .limite-aviso {
+    display: none;
+    background-color: #FFFFFF;
+    color: #1854F5;
+    padding: 24px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .limite-aviso p {
+    font-size: 17px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .limite-aviso a {
+    display: inline-block;
+    background: #1854F5;
+    color: white;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -135,13 +189,28 @@
   <h1>¿Qué quieres<br>recordar?</h1>
   <p class="subtitulo">Escríbelo en una frase.</p>
 
-  <label for="recordatorio">Recordatorio</label>
-  <textarea id="recordatorio" placeholder="Ejemplo: Pagar recibo de luz"></textarea>
+  <div class="limite-aviso" id="avisoLimite">
+    <p>Llegaste a tu límite de 15 recordatorios activos en el plan gratis.<br>Suscríbete para agregar sin límite.</p>
+    <a href="suscribir.html">Ver plan de suscripción</a>
+  </div>
 
-  <p class="pregunta-fecha">¿Cuándo quieres que te lo recordemos?</p>
-  <input type="date" id="fecha">
+  <div id="formulario">
+    <label for="recordatorio">Recordatorio</label>
+    <textarea id="recordatorio" placeholder="Ejemplo: Pagar recibo de luz"></textarea>
 
-  <button class="boton-guardar" id="btnGuardar">Guardar</button>
+    <p class="pregunta-fecha">¿Cuándo quieres que te lo recordemos?</p>
+    <input type="date" id="fecha">
+
+    <p class="pregunta-repetir">¿Se repite?</p>
+    <select id="repetir">
+      <option value="no">No se repite</option>
+      <option value="semanal">Cada semana</option>
+      <option value="mensual">Cada mes</option>
+      <option value="anual">Cada año</option>
+    </select>
+
+    <button class="boton-guardar" id="btnGuardar">Guardar</button>
+  </div>
 
   <div class="mensaje-confirmacion" id="mensajeConfirmacion">
     ¡Recordatorio guardado!
@@ -152,18 +221,52 @@
     var SUPABASE_URL = 'https://wekwkbrtxvwfbselprgn.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
     var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var LIMITE_GRATIS = 15;
 
-    async function revisarSesion() {
+    function fechaAString(fecha) {
+      var y = fecha.getFullYear();
+      var m = String(fecha.getMonth() + 1).padStart(2, '0');
+      var d = String(fecha.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + d;
+    }
+
+    async function revisarSesionYLimite() {
       var resultado = await supabaseClient.auth.getSession();
       if (!resultado.data || !resultado.data.session) {
         window.location.href = 'login.html';
+        return;
+      }
+
+      var usuarioId = resultado.data.session.user.id;
+      var hoyStr = fechaAString(new Date());
+
+      var sub = await supabaseClient
+        .from('Suscripciones')
+        .select('activo')
+        .eq('usuario_id', usuarioId)
+        .maybeSingle();
+
+      var esPremium = sub.data && sub.data.activo === true;
+
+      if (esPremium) return;
+
+      var conteo = await supabaseClient
+        .from('Recordatorios')
+        .select('id', { count: 'exact', head: true })
+        .eq('usuario_id', usuarioId)
+        .gte('fecha', hoyStr);
+
+      if (conteo.count !== null && conteo.count >= LIMITE_GRATIS) {
+        document.getElementById('formulario').style.display = 'none';
+        document.getElementById('avisoLimite').style.display = 'block';
       }
     }
-    revisarSesion();
+    revisarSesionYLimite();
 
     document.getElementById('btnGuardar').addEventListener('click', async function () {
       var texto = document.getElementById('recordatorio').value.trim();
       var fecha = document.getElementById('fecha').value;
+      var repetir = document.getElementById('repetir').value;
 
       if (texto === '' || fecha === '') {
         alert('Por favor escribe tu recordatorio y elige cuándo quieres que te lo recordemos.');
@@ -183,7 +286,7 @@
 
       var resultado = await supabaseClient
         .from('Recordatorios')
-        .insert([{ 'titulo': texto, 'fecha': fecha, 'usuario_id': usuarioId }]);
+        .insert([{ 'titulo': texto, 'fecha': fecha, 'usuario_id': usuarioId, 'repetir': repetir }]);
 
       if (resultado.error) {
         alert('Error al guardar: ' + resultado.error.message);
