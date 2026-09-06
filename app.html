@@ -89,6 +89,20 @@ padding:14px;
 border-radius:14px;
 margin-bottom:20px;
 }
+.vencidos-link{
+display:block;
+text-align:center;
+color:white;
+opacity:.85;
+font-size:16px;
+text-decoration:underline;
+margin-bottom:24px;
+background:none;
+border:none;
+width:100%;
+font-family:'Poppins',sans-serif;
+cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -114,6 +128,7 @@ margin-bottom:20px;
 <span class="numero" id="numProximos">0</span>
 </div>
 </div>
+<button class="vencidos-link" onclick="location.href='vencidos.html'" id="linkVencidos">Vencidos</button>
 <button class="boton" onclick="location.href='recordar.html'">
 + Recordar
 </button>
@@ -132,6 +147,43 @@ margin-bottom:20px;
     return y + '-' + m + '-' + d;
   }
 
+  function siguienteFecha(fechaStr, repetir) {
+    var partes = fechaStr.split('-').map(Number);
+    var f = new Date(partes[0], partes[1] - 1, partes[2]);
+    var hoy = new Date();
+    hoy.setHours(0,0,0,0);
+
+    while (f < hoy) {
+      if (repetir === 'semanal') f.setDate(f.getDate() + 7);
+      else if (repetir === 'mensual') f.setMonth(f.getMonth() + 1);
+      else if (repetir === 'anual') f.setFullYear(f.getFullYear() + 1);
+      else break;
+    }
+    return fechaAString(f);
+  }
+
+  async function ajustarRepeticiones(usuarioId, recordatorios) {
+    var hoyStr = fechaAString(new Date());
+    var actualizaciones = [];
+
+    recordatorios.forEach(function (item) {
+      if (item.repetir && item.repetir !== 'no' && item.fecha < hoyStr) {
+        var nueva = siguienteFecha(item.fecha, item.repetir);
+        if (nueva !== item.fecha) {
+          item.fecha = nueva;
+          actualizaciones.push(
+            supabaseClient.from('Recordatorios').update({ fecha: nueva }).eq('id', item.id)
+          );
+        }
+      }
+    });
+
+    if (actualizaciones.length > 0) {
+      await Promise.all(actualizaciones);
+    }
+    return recordatorios;
+  }
+
   document.getElementById('btnCerrarSesion').addEventListener('click', async function () {
     await supabaseClient.auth.signOut();
     window.location.href = 'login.html';
@@ -143,6 +195,7 @@ margin-bottom:20px;
       window.location.href = 'login.html';
       return;
     }
+    var usuarioId = sesion.data.session.user.id;
 
     var resultado = await supabaseClient
       .from('Recordatorios')
@@ -155,6 +208,8 @@ margin-bottom:20px;
       return;
     }
 
+    var datos = await ajustarRepeticiones(usuarioId, resultado.data);
+
     var hoy = new Date();
     var manana = new Date();
     manana.setDate(hoy.getDate() + 1);
@@ -165,8 +220,9 @@ margin-bottom:20px;
     var contHoy = 0;
     var contManana = 0;
     var contProximos = 0;
+    var contVencidos = 0;
 
-    resultado.data.forEach(function (item) {
+    datos.forEach(function (item) {
       var fechaItem = item['fecha'];
       if (!fechaItem) return;
 
@@ -176,12 +232,17 @@ margin-bottom:20px;
         contManana++;
       } else if (fechaItem > mananaStr) {
         contProximos++;
+      } else if (fechaItem < hoyStr) {
+        contVencidos++;
       }
     });
 
     document.getElementById('numHoy').textContent = contHoy;
     document.getElementById('numManana').textContent = contManana;
     document.getElementById('numProximos').textContent = contProximos;
+
+    var linkVencidos = document.getElementById('linkVencidos');
+    linkVencidos.textContent = contVencidos > 0 ? ('Vencidos (' + contVencidos + ')') : 'Vencidos';
   }
 
   cargarRecordatorios();
