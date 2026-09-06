@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecuerdaJM - Vencidos</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A4DFF">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="RecuerdaJM">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#0A4DFF;
+  font-family:'Poppins',sans-serif;
+  color:white;
+  min-height:100vh;
+}
+.pantalla{
+  min-height:100vh;
+  padding:28px 24px 34px;
+  display:flex;
+  flex-direction:column;
+}
+.arriba{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+.back-arrow{
+  font-size:34px;
+  text-decoration:none;
+  color:white;
+}
+.borrar-todos{
+  background:none;
+  border:1px solid rgba(255,255,255,0.6);
+  color:white;
+  font-family:'Poppins',sans-serif;
+  font-size:14px;
+  padding:10px 16px;
+  border-radius:20px;
+  cursor:pointer;
+}
+h1{
+  font-size:34px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.sub{
+  font-size:16px;
+  opacity:.9;
+  margin-bottom:28px;
+}
+.tarjeta{
+  width:100%;
+  background:white;
+  color:#333333;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.tarjeta-info{
+  flex:1;
+}
+.tarjeta-texto{
+  font-size:19px;
+  font-weight:600;
+  margin-bottom:4px;
+}
+.tarjeta-fecha{
+  font-size:14px;
+  color:#999999;
+}
+.tarjeta-acciones{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.btn-reprogramar, .btn-borrar{
+  border:none;
+  border-radius:14px;
+  padding:8px 12px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn-reprogramar{
+  background:#0A4DFF;
+  color:white;
+}
+.btn-borrar{
+  background:#E53935;
+  color:white;
+}
+.vacio{
+  text-align:center;
+  font-size:18px;
+  opacity:.9;
+  margin-top:60px;
+}
+.boton{
+  margin-top:auto;
+  width:100%;
+  height:88px;
+  border:none;
+  border-radius:44px;
+  background:white;
+  color:#0A4DFF;
+  font-size:26px;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+<div class="pantalla">
+  <div class="arriba">
+    <a href="app.html" class="back-arrow">&#8592;</a>
+    <button class="borrar-todos" id="btnBorrarTodos">Borrar todos</button>
+  </div>
+  <h1>Vencidos</h1>
+  <div class="sub">Puedes reprogramarlos o borrarlos.</div>
+
+  <div id="contenedorLista"></div>
+
+  <button class="boton" onclick="location.href='app.html'">Volver</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  var SUPABASE_URL = 'https://wekwkbrtxvwfbselprgn.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_sCA-x3urJUAUqNgdpt7WVw_y-Womhap';
+  var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  var idsVencidos = [];
+
+  function fechaAString(fecha) {
+    var y = fecha.getFullYear();
+    var m = String(fecha.getMonth() + 1).padStart(2, '0');
+    var d = String(fecha.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function fechaBonita(fechaStr) {
+    var partes = fechaStr.split('-');
+    var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var dia = parseInt(partes[2], 10);
+    var mes = meses[parseInt(partes[1], 10) - 1];
+    return dia + ' de ' + mes + ' de ' + partes[0];
+  }
+
+  async function cargarVencidos() {
+    var sesion = await supabaseClient.auth.getSession();
+    if (!sesion.data || !sesion.data.session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    var resultado = await supabaseClient
+      .from('Recordatorios')
+      .select('*')
+      .order('fecha', { ascending: true });
+
+    var contenedor = document.getElementById('contenedorLista');
+
+    if (resultado.error || !resultado.data) {
+      contenedor.innerHTML = '<div class="vacio">No se pudieron cargar los recordatorios.</div>';
+      return;
+    }
+
+    var hoyStr = fechaAString(new Date());
+
+    var vencidos = resultado.data.filter(function (item) {
+      return item.fecha < hoyStr && (!item.repetir || item.repetir === 'no');
+    });
+
+    idsVencidos = vencidos.map(function (item) { return item.id; });
+
+    if (vencidos.length === 0) {
+      contenedor.innerHTML = '<div class="vacio">No tienes recordatorios vencidos.</div>';
+      document.getElementById('btnBorrarTodos').style.display = 'none';
+      return;
+    }
+
+    contenedor.innerHTML = vencidos.map(function (item) {
+      return '<div class="tarjeta">' +
+        '<div class="tarjeta-info">' +
+          '<div class="tarjeta-texto">' + item.titulo + '</div>' +
+          '<div class="tarjeta-fecha">Venció el ' + fechaBonita(item.fecha) + '</div>' +
+        '</div>' +
+        '<div class="tarjeta-acciones">' +
+          '<button class="btn-reprogramar" onclick="reprogramar(\'' + item.id + '\')">Hoy</button>' +
+          '<button class="btn-borrar" onclick="borrarUno(\'' + item.id + '\')">Borrar</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  window.reprogramar = async function (id) {
+    var hoyStr = fechaAString(new Date());
+    await supabaseClient.from('Recordatorios').update({ fecha: hoyStr }).eq('id', id);
+    cargarVencidos();
+  };
+
+  window.borrarUno = async function (id) {
+    await supabaseClient.from('Recordatorios').delete().eq('id', id);
+    cargarVencidos();
+  };
+
+  document.getElementById('btnBorrarTodos').addEventListener('click', async function () {
+    if (idsVencidos.length === 0) return;
+    var confirmar = confirm('¿Borrar todos los recordatorios vencidos? Esta acción no se puede deshacer.');
+    if (!confirmar) return;
+
+    await supabaseClient.from('Recordatorios').delete().in('id', idsVencidos);
+    cargarVencidos();
+  });
+
+  cargarVencidos();
+</script>
+
+</body>
+</html>
