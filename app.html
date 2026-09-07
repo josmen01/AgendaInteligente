@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mis recordatorios</title>
+<title>RecuerdaJM - Mis recordatorios</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A4DFF">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -184,18 +184,30 @@ cursor:pointer;
     return recordatorios;
   }
 
+  async function obtenerSesionConReintento() {
+    var primero = await supabaseClient.auth.getSession();
+    if (primero.data && primero.data.session) return primero.data.session;
+
+    await new Promise(function (r) { setTimeout(r, 900); });
+
+    var segundo = await supabaseClient.auth.getSession();
+    if (segundo.data && segundo.data.session) return segundo.data.session;
+
+    return null;
+  }
+
   document.getElementById('btnCerrarSesion').addEventListener('click', async function () {
     await supabaseClient.auth.signOut();
     window.location.href = 'login.html';
   });
 
   async function cargarRecordatorios() {
-    var sesion = await supabaseClient.auth.getSession();
-    if (!sesion.data || !sesion.data.session) {
+    var sesionActual = await obtenerSesionConReintento();
+    if (!sesionActual) {
       window.location.href = 'login.html';
       return;
     }
-    var usuarioId = sesion.data.session.user.id;
+    var usuarioId = sesionActual.user.id;
 
     var resultado = await supabaseClient
       .from('Recordatorios')
